@@ -7,6 +7,7 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\CategoryResource;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class CategoryController extends Controller
@@ -40,6 +41,7 @@ class CategoryController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name'     => 'required|unique:categories',
+            'image'    => 'required|image|mimes:jpeg,jpg,png|max:2000',
         ]);
 
         if ($validator->fails()) {
@@ -47,9 +49,14 @@ class CategoryController extends Controller
         }
 
         //create category
+        //upload image
+        $image = $request->file('image');
+        $image->storeAs('public/categories', $image->hashName());
+
         $category = Category::create([
             'name' => $request->name,
             'slug' => Str::slug($request->name, '-'),
+            'image'       => $image->hashName(),
         ]);
 
         if ($category) {
@@ -91,14 +98,32 @@ class CategoryController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name'     => 'required|unique:categories,name,' . $category->id,
+            'image'         => 'required|image|mimes:jpeg,jpg,png|max:2000',
         ]);
 
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
 
+        //check image update
+        if ($request->file('image')) {
+
+            //remove old image
+            Storage::disk('local')->delete('public/categories/' . basename($category->image));
+
+            //upload new image
+            $image = $request->file('image');
+            $image->storeAs('public/posts', $image->hashName());
+
+            $category->update([
+                'name' => $request->name,
+                'slug' => Str::slug($request->name, '-'),
+            ]);
+        }
+
         //update category without image
         $category->update([
+            'image' => $image->hashName(),
             'name' => $request->name,
             'slug' => Str::slug($request->name, '-'),
         ]);
