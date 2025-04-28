@@ -10,6 +10,26 @@ use Illuminate\Support\Facades\Validator;
 
 class StockController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
+    {
+        //get all product 
+        $products = Product::with(['category', 'stocks', 'stock' => function ($query) {
+            $query->selectRaw('product_id, SUM(CASE WHEN type = "in" THEN quantity ELSE quantity*-1 END) as stock')
+                ->groupBy('product_id');
+        }])->when(request()->search, function ($categories) {
+            $categories = $categories->where('name', 'like', '%' . request()->search . '%');
+        })->latest()->paginate(10);
+
+        //append query string to pagination links
+        $products->appends(['search' => request()->search]);
+
+        //return with Api Resource
+        return new StockResource(true, 'List Data Suppliers', $products);
+    }
+    
     public function stockIn(Product $product, Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -26,14 +46,15 @@ class StockController extends Controller
             'quantity' => $request->quantity
         ]);
 
-        if($product){
+        if ($product) {
             return new StockResource(true, 'Data Stock Berhasil Diperbarui', $product);
         }
 
         return new StockResource(false, 'Data Stock Gagal Diupdate!', null);
     }
 
-    public function stockOut(Product $product, Request $request) {
+    public function stockOut(Product $product, Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'quantity'     => 'required|integer|gt:0',
         ]);
@@ -48,7 +69,7 @@ class StockController extends Controller
             'quantity' => $request->quantity
         ]);
 
-        if($product){
+        if ($product) {
             return new StockResource(true, 'Data Stock Berhasil Diperbarui', $product);
         }
 

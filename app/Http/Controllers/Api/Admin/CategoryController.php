@@ -98,7 +98,6 @@ class CategoryController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name'     => 'required|unique:categories,name,' . $category->id,
-            'image'         => 'required|image|mimes:jpeg,jpg,png|max:2000',
         ]);
 
         if ($validator->fails()) {
@@ -116,6 +115,7 @@ class CategoryController extends Controller
             $image->storeAs('public/categories', $image->hashName());
 
             $category->update([
+                'image' => $image->hashName(),
                 'name' => $request->name,
                 'slug' => Str::slug($request->name, '-'),
             ]);
@@ -123,7 +123,6 @@ class CategoryController extends Controller
 
         //update category without image
         $category->update([
-            'image' => $image->hashName(),
             'name' => $request->name,
             'slug' => Str::slug($request->name, '-'),
         ]);

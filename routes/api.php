@@ -55,7 +55,7 @@ Route::prefix('admin')->group(function () {
         ->middleware('permission:products.index|products.store|products.update|products.delete');
       
         //Suplliers
-        Route::apiResource('/suplliers', App\Http\Controllers\Api\Admin\SupplierController::class)
+        Route::apiResource('/suppliers', App\Http\Controllers\Api\Admin\SupplierController::class)
         ->middleware('permission:suppliers.index|suppliers.store|suppliers.update|suppliers.delete');
 
         //Stock
