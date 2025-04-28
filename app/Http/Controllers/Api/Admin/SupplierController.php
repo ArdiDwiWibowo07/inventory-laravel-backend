@@ -51,7 +51,7 @@ class SupplierController extends Controller
 
         //create supplier
         
-        $supplier = supplier::create([
+        $supplier = Supplier::create([
             'name' => $request->name,
             'telp' => $request->telp,
             'address' => $request->address,

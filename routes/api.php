@@ -49,6 +49,20 @@ Route::prefix('admin')->group(function () {
         //Categories
         Route::apiResource('/categories', App\Http\Controllers\Api\Admin\CategoryController::class)
         ->middleware('permission:categories.index|categories.store|categories.update|categories.delete');
+     
+        //Products
+        Route::apiResource('/products', App\Http\Controllers\Api\Admin\ProductController::class)
+        ->middleware('permission:products.index|products.store|products.update|products.delete');
+      
+        //Suplliers
+        Route::apiResource('/suplliers', App\Http\Controllers\Api\Admin\SupplierController::class)
+        ->middleware('permission:suppliers.index|suppliers.store|suppliers.update|suppliers.delete');
 
+        //Stock
+        Route::post('/stock/in/{product}', [\App\Http\Controllers\Api\Admin\StockController::class, 'in'])
+        ->middleware('permission:stock.in');
+    
+        Route::post('/stock/out/{product}', [\App\Http\Controllers\Api\Admin\StockController::class, 'out'])
+        ->middleware('permission:stock.out');
     });
 });
