@@ -113,7 +113,7 @@ class CategoryController extends Controller
 
             //upload new image
             $image = $request->file('image');
-            $image->storeAs('public/posts', $image->hashName());
+            $image->storeAs('public/categories', $image->hashName());
 
             $category->update([
                 'name' => $request->name,
