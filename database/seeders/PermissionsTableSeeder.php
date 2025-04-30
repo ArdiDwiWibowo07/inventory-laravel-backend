@@ -47,6 +47,7 @@ class PermissionsTableSeeder extends Seeder
         Permission::create(['name' => 'suppliers.delete', 'guard_name' => 'api']);
 
         //permission for stock
+        Permission::create(['name' => 'stock.index', 'guard_name' => 'api']);
         Permission::create(['name' => 'stock.in', 'guard_name' => 'api']);
         Permission::create(['name' => 'stock.out', 'guard_name' => 'api']);
     }

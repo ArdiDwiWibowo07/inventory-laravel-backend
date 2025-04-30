@@ -21,7 +21,7 @@ class ProductController extends Controller
     public function index()
     {
         //get products
-        $products = Product::when(request()->search, function ($products) {
+        $products = Product::with(['category', 'supplier'])->when(request()->search, function ($products) {
             $products = $products->where('name', 'like', '%' . request()->search . '%');
         })->latest()->paginate(5);
 
@@ -107,7 +107,6 @@ class ProductController extends Controller
             'category_id'       => 'required',
             'supplier_id'       => 'required',
             'name'     => 'required|unique:categories,name,' . $product->id,
-            'image'         => 'required|image|mimes:jpeg,jpg,png|max:2000',
             'unit'              => 'required',
         ]);
 
