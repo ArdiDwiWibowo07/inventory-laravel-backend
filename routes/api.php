@@ -59,12 +59,19 @@ Route::prefix('admin')->group(function () {
         ->middleware('permission:suppliers.index|suppliers.store|suppliers.update|suppliers.delete');
 
         //Stock
-
         Route::get('/stocks', [\App\Http\Controllers\Api\Admin\StockController::class, 'index']);
         Route::post('/stocks/in/{product}', [\App\Http\Controllers\Api\Admin\StockController::class, 'stockIn'])
         ->middleware('permission:stock.in');
     
         Route::post('/stocks/out/{product}', [\App\Http\Controllers\Api\Admin\StockController::class, 'stockOut'])
         ->middleware('permission:stock.out');
+
+        Route::get('/stocks/out/{product}', [\App\Http\Controllers\ReportController::class, 'download'])
+        ->middleware('permission:stock.out');
+
+        Route::controller(\App\Http\Controllers\ReportController::class)->as('reports.')->prefix('reports')->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::get('/download/{type}/{from_date}/{to_date}', 'download')->name('download');
+        });
     });
 });
